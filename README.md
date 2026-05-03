@@ -6,6 +6,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/primecaptcha)](https://nodejs.org)
 
+<div align="center">
+  <br />
+  <img src="public/sample.png" alt="PrimeCaptcha Sample Image" />
+  <br /><br />
+</div>
+
 ---
 
 ## ✨ Key Features

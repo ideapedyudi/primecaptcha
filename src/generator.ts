@@ -169,6 +169,52 @@ function drawGrainNoise(
 }
 
 /**
+ * Applies a sine wave distortion to the entire canvas.
+ * This is highly effective against OCR as it curves the baseline and character shapes.
+ */
+function applyWaveDistortion(
+  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
+  width: number,
+  height: number,
+  noiseIntensity: number
+): void {
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  // Clone original data to read from
+  const originalData = new Uint8ClampedArray(data);
+  
+  // Wave amplitudes based on noise intensity
+  const amplitudeX = randomInt(2, 4 + Math.floor(noiseIntensity / 3));
+  const amplitudeY = randomInt(3, 6 + Math.floor(noiseIntensity / 2));
+  
+  const phaseX = randomInt(0, 100);
+  const phaseY = randomInt(0, 100);
+  const periodX = randomInt(40, 90);
+  const periodY = randomInt(40, 90);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const srcX = Math.floor(x + Math.sin((y / periodX) * Math.PI * 2 + phaseX) * amplitudeX);
+      const srcY = Math.floor(y + Math.sin((x / periodY) * Math.PI * 2 + phaseY) * amplitudeY);
+
+      // Clamp to edges to prevent out-of-bounds rendering
+      const clampedX = Math.max(0, Math.min(width - 1, srcX));
+      const clampedY = Math.max(0, Math.min(height - 1, srcY));
+
+      const srcIndex = (clampedY * width + clampedX) * 4;
+      const destIndex = (y * width + x) * 4;
+
+      data[destIndex] = originalData[srcIndex];
+      data[destIndex + 1] = originalData[srcIndex + 1];
+      data[destIndex + 2] = originalData[srcIndex + 2];
+      data[destIndex + 3] = originalData[srcIndex + 3];
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+}
+
+/**
  * Draws captcha characters one by one with full obfuscation:
  * - Per-character random rotation (-20° to 20°)
  * - Y-axis jitter (slightly varying vertical position)
@@ -184,14 +230,15 @@ function drawCharacters(
 ): void {
   const charCount = text.length;
 
-  // Calculate even spacing based on canvas width and character count
-  const charSpacing = (width - fontSize) / charCount;
+  // Calculate even spacing but tighter to force character overlap (Anti-OCR)
+  const safeWidth = width - (fontSize * 1.2);
+  const charSpacing = safeWidth / Math.max(1, charCount - 1);
 
   for (let i = 0; i < charCount; i++) {
     ctx.save();
 
-    // X Position: even distribution with slight horizontal jitter
-    const baseX = fontSize / 2 + i * charSpacing + randomInt(-3, 4);
+    // X Position: closer distribution with overlap and horizontal jitter
+    const baseX = (fontSize * 0.7) + i * charSpacing + randomInt(-4, 5);
 
     // Y Position: center canvas with Y-axis jitter (±15% of canvas height)
     const jitterRange = Math.floor(height * 0.15);
@@ -199,6 +246,11 @@ function drawCharacters(
 
     // Translate origin to character position for accurate rotation
     ctx.translate(baseX, baseY);
+
+    // Add Shearing (Skew) for further OCR resistance
+    const shearX = randomInt(-25, 25) / 100; // -0.25 to 0.25
+    const shearY = randomInt(-10, 10) / 100; // -0.1 to 0.1
+    ctx.transform(1, shearY, shearX, 1, 0, 0);
 
     // Random rotation: -20° to 20° (converted to radians)
     const rotateDeg = randomInt(-20, 21);
@@ -259,10 +311,13 @@ export function generateCaptcha(options: ResolvedOptions): PrimeResult {
   // Step 5: Draw characters with per-char obfuscation
   drawCharacters(ctx, text, width, height, fontSize);
 
-  // Step 6: Draw grain noise on top layer (over characters)
+  // Step 6: Apply Wave Distortion (Highly effective against OCR)
+  applyWaveDistortion(ctx, width, height, noiseIntensity);
+
+  // Step 7: Draw grain noise on top layer (over everything)
   drawGrainNoise(ctx, width, height, noiseIntensity);
 
-  // Step 7: Export to PNG Buffer (synchronous, zero disk I/O)
+  // Step 8: Export to PNG Buffer (synchronous, zero disk I/O)
   // @napi-rs/canvas uses a very fast Rust-based encoder
   const image = canvas.toBuffer('image/png');
 
