@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/primecaptcha.svg)](https://www.npmjs.com/package/primecaptcha)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/node/v/primecaptcha)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D_20-brightgreen.svg)](https://nodejs.org)
 
 <div align="center">
   <br />
@@ -32,6 +32,8 @@
 ```bash
 npm install primecaptcha
 ```
+
+> **Note:** This library requires **Node.js version 20 or higher** for optimal performance and compatibility.
 
 ---
 
