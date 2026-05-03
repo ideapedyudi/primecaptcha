@@ -1,0 +1,46 @@
+{
+  "name": "primecaptcha",
+  "version": "1.0.0",
+  "description": "High-performance, buffer-first image captcha library for Node.js. Zero disk I/O, crypto-secure randomness.",
+  "keywords": [
+    "captcha",
+    "image-captcha",
+    "canvas",
+    "nodejs",
+    "security",
+    "typescript"
+  ],
+  "license": "MIT",
+  "author": "ideapedyudi",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "benchmark": "ts-node test/benchmark.ts",
+    "example:restapi": "ts-node example/restapi.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.53"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.12.0",
+    "express": "^5.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ideapedyudi/primecaptcha"
+  }
+}
