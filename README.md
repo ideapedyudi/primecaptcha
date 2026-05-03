@@ -9,7 +9,8 @@
 <div align="center">
   <br />
   <img src="public/sample.png" alt="PrimeCaptcha Sample Image" />
-  <br /><br />
+  <p><em>Example Output Text: <strong>2LV5DD</strong></em></p>
+  <br />
 </div>
 
 ---
