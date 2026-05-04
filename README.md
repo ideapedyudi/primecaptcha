@@ -1,10 +1,15 @@
-# primecaptcha 🔐
+# primecaptcha 🔐 — Node.js Image Captcha Library (Text & Math)
 
-> High-performance, buffer-first image captcha library for Node.js — Zero Disk I/O, Crypto-Secure.
+> The ultimate high-performance, buffer-first **Image CAPTCHA library for Node.js**. Supports both **Alphanumeric Text CAPTCHA** and **Mathematical CAPTCHA** equations. Built with Zero Disk I/O and Crypto-Secure randomness to prevent OCR bots and spam.
 
 [![npm version](https://img.shields.io/npm/v/primecaptcha.svg)](https://www.npmjs.com/package/primecaptcha)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D_20-brightgreen.svg)](https://nodejs.org)
+
+**primecaptcha** is a highly optimized, TypeScript-ready captcha generator for Express, NestJS, and Fastify. By rendering images entirely in memory (RAM), it guarantees ultra-low latency. Perfect for securing login forms, protecting registrations, and preventing spam on your APIs.
+
+**Keywords**: `nodejs captcha`, `math captcha`, `image captcha`, `anti-bot`, `spam protection`, `express captcha`, `typescript`
+
 
 ## 🖼️ Preview
 
@@ -25,7 +30,8 @@
 
 | Feature | Details |
 |---|---|
-| ⚡ **Buffer-First** | Zero Disk I/O — everything is processed directly in RAM |
+| 🔠 **Dual Mode** | Choose between **Alphanumeric Text CAPTCHA** or **Mathematical CAPTCHA** |
+| ⚡ **Buffer-First** | Zero Disk I/O — everything is processed directly in RAM for maximum speed |
 | 🔒 **Crypto-Secure** | Uses `crypto.randomInt` for secure randomness |
 | 🎨 **Anti-OCR** | Per-character rotation, Y-jitter, vector lines, grain noise |
 | 📦 **Lightweight** | Only requires `@napi-rs/canvas` as the main dependency |
