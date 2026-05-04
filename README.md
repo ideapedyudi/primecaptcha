@@ -1,4 +1,4 @@
-# primecaptcha 🔐 — Node.js Image Captcha Library
+# 🔐 primecaptcha - Node.js Image Captcha Library
 
 > The ultimate high-performance, buffer-first **Image CAPTCHA library for Node.js**. Supports both **Alphanumeric Text CAPTCHA** and **Mathematical CAPTCHA** equations. Built with Zero Disk I/O and Crypto-Secure randomness to prevent OCR bots and spam.
 
@@ -7,8 +7,6 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D_20-brightgreen.svg)](https://nodejs.org)
 
 **primecaptcha** is a highly optimized, TypeScript-ready captcha generator for Express, NestJS, and Fastify. By rendering images entirely in memory (RAM), it guarantees ultra-low latency. Perfect for securing login forms, protecting registrations, and preventing spam on your APIs.
-
-**Keywords**: `nodejs captcha`, `math captcha`, `image captcha`, `anti-bot`, `spam protection`, `express captcha`, `typescript`
 
 
 ## 🖼️ Preview
