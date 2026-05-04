@@ -1,4 +1,4 @@
-# primecaptcha 🔐 — Node.js Image Captcha Library (Text & Math)
+# primecaptcha 🔐 — Node.js Image Captcha Library
 
 > The ultimate high-performance, buffer-first **Image CAPTCHA library for Node.js**. Supports both **Alphanumeric Text CAPTCHA** and **Mathematical CAPTCHA** equations. Built with Zero Disk I/O and Crypto-Secure randomness to prevent OCR bots and spam.
 
