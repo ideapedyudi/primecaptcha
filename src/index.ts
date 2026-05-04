@@ -9,6 +9,7 @@ export type { PrimeOptions, PrimeResult };
  * Separated as a constant for easy extensibility.
  */
 const DEFAULT_OPTIONS: Readonly<ResolvedOptions> = {
+  type: 'text',
   width: 200,
   height: 80,
   length: 6,
@@ -29,6 +30,7 @@ function clampNoiseIntensity(value: number): number {
  */
 function resolveOptions(options?: PrimeOptions): ResolvedOptions {
   return {
+    type: options?.type ?? DEFAULT_OPTIONS.type,
     width: options?.width ?? DEFAULT_OPTIONS.width,
     height: options?.height ?? DEFAULT_OPTIONS.height,
     length: options?.length ?? DEFAULT_OPTIONS.length,

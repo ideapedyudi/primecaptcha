@@ -34,9 +34,15 @@ app.get('/', (req, res) => {
     <body>
       <div class="card">
         <h2>PrimeCaptcha Example</h2>
+        <div style="margin-bottom: 15px;">
+          <select id="captchaType" onchange="loadCaptcha()" style="padding: 5px; font-size: 16px;">
+            <option value="text">Text CAPTCHA</option>
+            <option value="math">Math CAPTCHA</option>
+          </select>
+        </div>
         <img id="captchaImage" src="" alt="Captcha Loading..." title="Click to reload" />
         <div>
-          <input type="text" id="captchaInput" placeholder="Enter text" maxlength="6" />
+          <input type="text" id="captchaInput" placeholder="Enter answer" />
           <button onclick="verifyCaptcha()">Verify</button>
         </div>
         <p id="message"></p>
@@ -47,7 +53,8 @@ app.get('/', (req, res) => {
 
         // Function to load a new captcha
         async function loadCaptcha() {
-          const res = await fetch('/api/captcha');
+          const type = document.getElementById('captchaType').value;
+          const res = await fetch('/api/captcha?type=' + type);
           const data = await res.json();
           currentSessionId = data.sessionId;
           // Display the base64 image
@@ -95,8 +102,11 @@ app.get('/', (req, res) => {
 
 // Endpoint to generate a new captcha
 app.get('/api/captcha', (req, res) => {
+  const captchaType = req.query.type === 'math' ? 'math' : 'text';
+
   // Generate the captcha
   const captcha = generate({
+    type: captchaType,
     width: 250,
     height: 80,
     length: 6,
@@ -105,7 +115,7 @@ app.get('/api/captcha', (req, res) => {
 
   // Create a random session ID
   const sessionId = Math.random().toString(36).substring(2, 15);
-  
+
   // Store the plaintext for validation
   captchaStore.set(sessionId, captcha.text);
 

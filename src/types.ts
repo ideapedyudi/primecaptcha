@@ -3,11 +3,13 @@
  * All fields are optional with optimized default values.
  */
 export interface PrimeOptions {
+  /** Captcha type. 'text' for random alphanumeric, 'math' for simple math equations. Default: 'text' */
+  type?: 'text' | 'math';
   /** Canvas width in pixels. Default: 200 */
   width?: number;
   /** Canvas height in pixels. Default: 80 */
   height?: number;
-  /** Number of characters to generate. Default: 6 */
+  /** Number of characters to generate (only for 'text' type). Default: 6 */
   length?: number;
   /** Font size in pixels. Default: 42 */
   fontSize?: number;
@@ -21,7 +23,7 @@ export interface PrimeOptions {
 export interface PrimeResult {
   /** PNG Buffer of the captcha image, ready to be sent as an HTTP response. */
   image: Buffer;
-  /** Plaintext captcha text for session/database storage. */
+  /** Plaintext captcha text (or math answer) for session/database storage. */
   text: string;
 }
 
@@ -30,6 +32,7 @@ export interface PrimeResult {
  * All fields are required to ensure type safety.
  */
 export interface ResolvedOptions {
+  type: 'text' | 'math';
   width: number;
   height: number;
   length: number;

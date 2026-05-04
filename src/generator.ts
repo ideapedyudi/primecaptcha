@@ -43,6 +43,32 @@ function generateText(length: number): string {
 }
 
 /**
+ * Generates a simple math equation and its answer.
+ * Format: "A + B = ?" or "A - B = ?"
+ * @returns { equation: string, answer: string }
+ */
+function generateMath(): { equation: string; answer: string } {
+  const isAddition = randomInt(0, 2) === 0;
+  
+  if (isAddition) {
+    const a = randomInt(1, 20);
+    const b = randomInt(1, 20);
+    return {
+      equation: `${a} + ${b} = ?`,
+      answer: (a + b).toString(),
+    };
+  } else {
+    // For subtraction, ensure result is positive
+    const a = randomInt(10, 30);
+    const b = randomInt(1, a);
+    return {
+      equation: `${a} - ${b} = ?`,
+      answer: (a - b).toString(),
+    };
+  }
+}
+
+/**
  * Draws background layer with smooth gradients and pastel colors.
  * A clean background ensures characters are human-readable
  * while still challenging for OCR.
@@ -226,7 +252,8 @@ function drawCharacters(
   text: string,
   width: number,
   height: number,
-  fontSize: number
+  fontSize: number,
+  type: 'text' | 'math' = 'text'
 ): void {
   const charCount = text.length;
 
@@ -252,8 +279,8 @@ function drawCharacters(
     const shearY = randomInt(-10, 10) / 100; // -0.1 to 0.1
     ctx.transform(1, shearY, shearX, 1, 0, 0);
 
-    // Random rotation: -20° to 20° (converted to radians)
-    const rotateDeg = randomInt(-20, 21);
+    // Random rotation: -20° to 20° for text, -5° to 5° for math (converted to radians)
+    const rotateDeg = type === 'math' ? randomInt(-5, 6) : randomInt(-20, 21);
     ctx.rotate((rotateDeg * Math.PI) / 180);
 
     // Select color from palette randomly
@@ -293,10 +320,20 @@ function drawCharacters(
  * @returns PrimeResult with image Buffer and plaintext text
  */
 export function generateCaptcha(options: ResolvedOptions): PrimeResult {
-  const { width, height, length, fontSize, noiseIntensity } = options;
+  const { type, width, height, length, fontSize, noiseIntensity } = options;
 
-  // Step 1: Generate captcha text with crypto.randomInt
-  const text = generateText(length);
+  // Step 1: Generate captcha string based on type
+  let displayText = '';
+  let answerText = '';
+
+  if (type === 'math') {
+    const mathObj = generateMath();
+    displayText = mathObj.equation;
+    answerText = mathObj.answer;
+  } else {
+    displayText = generateText(length);
+    answerText = displayText;
+  }
 
   // Step 2: Create canvas in memory (zero disk I/O)
   const canvas = createCanvas(width, height);
@@ -309,7 +346,7 @@ export function generateCaptcha(options: ResolvedOptions): PrimeResult {
   drawInterferenceLines(ctx, width, height, noiseIntensity);
 
   // Step 5: Draw characters with per-char obfuscation
-  drawCharacters(ctx, text, width, height, fontSize);
+  drawCharacters(ctx, displayText, width, height, fontSize, type);
 
   // Step 6: Apply Wave Distortion (Highly effective against OCR)
   applyWaveDistortion(ctx, width, height, noiseIntensity);
@@ -321,5 +358,5 @@ export function generateCaptcha(options: ResolvedOptions): PrimeResult {
   // @napi-rs/canvas uses a very fast Rust-based encoder
   const image = canvas.toBuffer('image/png');
 
-  return { image, text };
+  return { image, text: answerText };
 }

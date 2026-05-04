@@ -6,10 +6,16 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D_20-brightgreen.svg)](https://nodejs.org)
 
+## 🖼️ Preview
+
 <div align="center">
   <br />
-  <img src="public/sample.png" alt="PrimeCaptcha Sample Image" />
-  <p><em>Example Output Text</em></p>
+
+| Captcha Type | Example Output |
+| :---: | :---: |
+| **Text** | <img src="public/sample.png" alt="Text Captcha Sample Image" width="200" height="80" /> |
+| **Math** | <img src="public/samplemath.png" alt="Math Captcha Sample Image" width="200" height="80" /> |
+
   <br />
 </div>
 
@@ -94,13 +100,23 @@ app.post('/verify/:sessionId', express.json(), (req, res) => {
 ```typescript
 import { generate } from 'primecaptcha';
 
-const captcha = generate({
+// Text CAPTCHA
+const textCaptcha = generate({
+  type: 'text',        // 'text' or 'math' (default: 'text')
   width: 250,          // Canvas width (default: 200)
   height: 90,          // Canvas height (default: 80)
   length: 8,           // Number of characters (default: 6)
   fontSize: 48,        // Font size (default: 42)
   noiseIntensity: 7,   // Noise intensity 1-10 (default: 5)
 });
+
+// Math CAPTCHA
+const mathCaptcha = generate({
+  type: 'math',        // Mathematical equations (e.g. "12 + 5 = ?")
+  width: 250,
+  height: 80,
+});
+console.log(mathCaptcha.text); // "17" (The answer to validate against)
 ```
 
 ### Async Version (for high-concurrency)
@@ -123,9 +139,10 @@ Main function to generate captcha synchronously.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
+| `type` | `'text' \| 'math'` | `'text'` | Captcha type: random text or simple math equation |
 | `width` | `number` | `200` | Canvas width in pixels |
 | `height` | `number` | `80` | Canvas height in pixels |
-| `length` | `number` | `6` | Number of captcha characters |
+| `length` | `number` | `6` | Number of captcha characters (only for `text` type) |
 | `fontSize` | `number` | `42` | Font size in pixels |
 | `noiseIntensity` | `number` | `5` | Noise intensity (1-10) |
 
