@@ -4,11 +4,13 @@
   "description": "High-performance, buffer-first image captcha library for Node.js. Zero disk I/O, crypto-secure randomness.",
   "keywords": [
     "captcha",
+    "node-captcha",
     "image-captcha",
-    "canvas",
-    "nodejs",
+    "captcha-generator",
+    "math-captcha",
     "security",
-    "typescript"
+    "human-verification",
+    "fast-captcha"
   ],
   "license": "MIT",
   "author": "ideapedyudi",
