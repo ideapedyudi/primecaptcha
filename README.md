@@ -63,8 +63,9 @@ console.log(captcha.image);  // <Buffer 89 50 4e 47 ...> (PNG Buffer)
 ### Integration with Express.js
 
 ```typescript
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { generate } from 'primecaptcha';
+import crypto from 'crypto';
 
 const app = express();
 
@@ -72,30 +73,75 @@ const app = express();
 const captchaStore = new Map<string, string>();
 
 // Endpoint to generate captcha
-app.get('/captcha/:sessionId', (req, res) => {
-  const captcha = generate();
-  
-  // Save text for validation
-  captchaStore.set(req.params.sessionId, captcha.text);
-  
-  // Send image directly to client
-  res.setHeader('Content-Type', 'image/png');
-  res.setHeader('Cache-Control', 'no-cache, no-store');
-  res.send(captcha.image);
+app.get('/api/captcha/generate', (req: Request, res: Response) => {
+    // Generate text-based captcha
+    const captcha = generate({
+        type: 'text',        // 'text' or 'math' (default: 'text')
+        width: 150,          // Canvas width (default: 200)
+        height: 50,          // Canvas height (default: 80)
+        length: 4,           // Number of characters (default: 6)
+        fontSize: 24,        // Font size (default: 42)
+        noiseIntensity: 7,   // Noise intensity 1-10 (default: 5)
+    });
+
+    // Generate a unique session ID to track the user/request
+    const sessionId = crypto.randomBytes(16).toString('hex');
+
+    // Store the captcha text for validation later
+    captchaStore.set(sessionId, captcha.text);
+
+    // Clear from memory after 5 minutes (300000 ms) to prevent memory leaks
+    setTimeout(() => {
+        captchaStore.delete(sessionId);
+    }, 300000);
+
+    // Return the image as a Base64 string so it can be easily embedded in frontend <img> tags
+    res.json({
+        success: true,
+        sessionId: sessionId,
+        image: `data:image/png;base64,${captcha.image.toString('base64')}`
+    });
 });
 
 // Endpoint to verify captcha
-app.post('/verify/:sessionId', express.json(), (req, res) => {
-  const { userInput } = req.body;
-  const expected = captchaStore.get(req.params.sessionId);
-  
-  captchaStore.delete(req.params.sessionId); // Delete after verification
-  
-  if (!expected || userInput.toUpperCase() !== expected) {
-    return res.status(400).json({ valid: false, message: 'Invalid captcha!' });
-  }
-  
-  res.json({ valid: true, message: 'Captcha is correct!' });
+app.post('/api/captcha/verify', (req: Request, res: Response) => {
+    const { sessionId, userInput } = req.body;
+
+    // Validate payload
+    if (!sessionId || !userInput) {
+        return res.status(400).json({
+            success: false,
+            message: 'sessionId and userInput are required in the request body'
+        });
+    }
+
+    // Retrieve the original captcha text from memory
+    const expectedText = captchaStore.get(sessionId);
+
+    // If not found, it means the session has expired or is invalid
+    if (!expectedText) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid captcha or session has expired'
+        });
+    }
+
+    // Delete from store immediately to prevent brute-force attacks (One-Time Use)
+    captchaStore.delete(sessionId);
+
+    // Verify the user input against the expected text 
+    // (Case Insensitive since primecaptcha text is always uppercase)
+    if (userInput.toUpperCase() === expectedText) {
+        return res.json({
+            success: true,
+            message: 'Captcha verified successfully!'
+        });
+    } else {
+        return res.status(400).json({
+            success: false,
+            message: 'Incorrect captcha, please try again!'
+        });
+    }
 });
 ```
 
